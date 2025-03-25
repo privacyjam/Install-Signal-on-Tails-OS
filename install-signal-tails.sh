@@ -105,12 +105,16 @@ fi
 # === Step 2: After Reboot ===
 echo "🚀 Step 2: Waiting for flatpak to finish loading..."
 
-# Wait until flatpak is available (max 60 sec)
+# Wait until flatpak is available (max 120 sec)
+echo "⏳ Waiting up to 2 minutes for Additional Software to finish loading..."
 i=0
 while ! command -v flatpak >/dev/null 2>&1; do
   sleep 2
   i=$((i+2))
-  [ $i -ge 60 ] && echo "❌ Flatpak not available after 60 seconds. Try again later." && exit 1
+  if [ $i -ge 120 ]; then
+    echo "❌ Flatpak still isn't available after 2 minutes. Try running the script again manually later."
+    exit 1
+  fi
 done
 
 # Re-ensure symlinks (just in case)
