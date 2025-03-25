@@ -18,7 +18,7 @@ fi
 
 # === Check that the script is in persistent storage ===
 case "$SCRIPT_PATH" in
-  "$PERSISTENT_DIR"/*)
+  "$PERSISTENT_DIR"/*|"$HOME/Persistent"/*)
     # All good
     ;;
   *)
