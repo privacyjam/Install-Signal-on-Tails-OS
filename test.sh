@@ -6,14 +6,29 @@ PERSISTENT_DIR="/live/persistence/TailsData_unlocked/Persistent"
 DOTFILES_DIR="/live/persistence/TailsData_unlocked/dotfiles"
 STATE_FILE="$PERSISTENT_DIR/.signal-setup-state"
 
+SCRIPT_PATH="$(readlink -f "$0")"
+
 echo "[*] Signal Setup Script for Tails"
 
-# === Check persistence ===
+# === Check that persistence is active ===
 if [ ! -d "$PERSISTENT_DIR" ]; then
   echo "[-] Persistence is not enabled. Enable 'Personal Data' and reboot before running this."
   exit 1
 fi
 
+# === Check that the script is in persistent storage ===
+case "$SCRIPT_PATH" in
+  "$PERSISTENT_DIR"/*)
+    # All good
+    ;;
+  *)
+    echo "[-] This script is not located inside your Persistent storage."
+    echo "    Please move it to: $PERSISTENT_DIR and run it from there."
+    exit 1
+    ;;
+esac
+
+# === Check that Dotfiles persistence is enabled ===
 if [ ! -d "$DOTFILES_DIR" ]; then
   echo "[-] Dotfiles persistence is not enabled."
   echo "    Enable it via 'Configure Persistent Storage' and reboot before running this."
@@ -32,7 +47,7 @@ if [ ! -f "$STATE_FILE" ]; then
     echo "[*] Flatpak already installed."
   fi
 
-  # Add to Additional Software if not already listed
+  # Add flatpak to Additional Software if not already listed
   ADD_SOFT_CONF="/live/persistence/TailsData_unlocked/live-additional-software.conf"
   if [ -w "$ADD_SOFT_CONF" ] && ! grep -q "^flatpak$" "$ADD_SOFT_CONF"; then
     echo "[*] Adding flatpak to Additional Software..."
@@ -41,16 +56,16 @@ if [ ! -f "$STATE_FILE" ]; then
     echo "[*] Flatpak already in Additional Software list."
   fi
 
-  # Create persistent flatpak data folders and symlinks
-  echo "[*] Setting up flatpak directories..."
+  # Set up persistent Flatpak directories and symlinks
+  echo "[*] Setting up persistent Flatpak directories..."
   mkdir -p "$PERSISTENT_DIR/flatpak" "$PERSISTENT_DIR/app" "$HOME/.local/share" "$HOME/.var"
   rm -rf --one-file-system "$HOME/.local/share/flatpak"
   rm -rf --one-file-system "$HOME/.var/app"
   ln -sf "$PERSISTENT_DIR/flatpak" "$HOME/.local/share/flatpak"
   ln -sf "$PERSISTENT_DIR/app" "$HOME/.var/app"
 
-  # Create launcher script for Signal
-  echo "[*] Creating launch script..."
+  # Create Signal launch script
+  echo "[*] Creating Signal launch script..."
   cat > "$PERSISTENT_DIR/signal.sh" <<EOF
 #!/bin/sh
 export HTTP_PROXY=socks://127.0.0.1:9050
@@ -59,19 +74,18 @@ flatpak run org.signal.Signal
 EOF
   chmod +x "$PERSISTENT_DIR/signal.sh"
 
-  # Create autostart entry
-  echo "[*] Creating autostart and app menu entries..."
+  # Set up autostart + GNOME launcher
+  echo "[*] Creating autostart and desktop entries..."
   mkdir -p "$DOTFILES_DIR/.config/autostart"
   cat > "$DOTFILES_DIR/.config/autostart/FlatpakSetup.desktop" <<EOF
 [Desktop Entry]
 Name=Flatpak Setup
 Comment=Relinks flatpak folders on login
-Exec=$PERSISTENT_DIR/install-signal-on-tails.sh
+Exec=$SCRIPT_PATH
 Terminal=false
 Type=Application
 EOF
 
-  # Create GNOME application launcher
   mkdir -p "$DOTFILES_DIR/.local/share/applications"
   cat > "$DOTFILES_DIR/.local/share/applications/Signal.desktop" <<EOF
 [Desktop Entry]
@@ -83,16 +97,17 @@ Type=Application
 Icon=$HOME/.local/share/flatpak/app/org.signal.Signal/current/active/files/share/icons/hicolor/128x128/apps/org.signal.Signal.png
 EOF
 
-  # Mark state
+  # Mark step 1 complete
   touch "$STATE_FILE"
-  echo "[✓] Initial setup complete. Please REBOOT, then run this script again to finish Signal installation."
+  echo "[✓] FIRST PART Setup complete. Please REBOOT now, then run this script again to finish installing Signal."
+  echo "Again, Reboot then run this again."
   exit 0
 fi
 
 # === Step 2: Install Signal ===
 echo "[*] Step 2: Installing Signal via Flatpak..."
 
-# Re-ensure flatpak dirs are linked
+# Re-link flatpak dirs (just in case)
 mkdir -p "$PERSISTENT_DIR/flatpak" "$PERSISTENT_DIR/app" "$HOME/.local/share" "$HOME/.var"
 rm -rf --one-file-system "$HOME/.local/share/flatpak"
 rm -rf --one-file-system "$HOME/.var/app"
@@ -103,9 +118,9 @@ ln -sf "$PERSISTENT_DIR/app" "$HOME/.var/app"
 torify flatpak remote-add --user --if-not-exists flathub https://flathub.org/repo/flathub.flatpakrepo
 torify flatpak install -y flathub org.signal.Signal
 
-# Clean up state file
+# Cleanup
 rm -f "$STATE_FILE"
 
 echo "[✓] Signal has been successfully installed!"
-echo "→ You can launch it from the Applications menu or by running:"
+echo "→ Launch it from the Applications menu or with:"
 echo "   $PERSISTENT_DIR/signal.sh"
