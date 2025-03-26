@@ -52,6 +52,34 @@ if [ ! -f "$STATE_FILE" ]; then
   ln -sf "$PERSISTENT_DIR/flatpak" "$HOME/.local/share/flatpak"
   ln -sf "$PERSISTENT_DIR/app" "$HOME/.var/app"
 
+  # Create flatpak-setup.sh to restore symlinks on login
+echo "Creating flatpak-setup.sh for auto-linking on login..."
+cat > "$PERSISTENT_DIR/flatpak-setup.sh" <<EOF
+#!/bin/sh
+mkdir -p ~/Persistent/flatpak ~/Persistent/app ~/.local/share ~/.var
+
+if ! file ~/.local/share/flatpak | grep -q 'symbolic link'; then
+  rm -rf --one-file-system ~/.local/share/flatpak
+  ln -s ~/Persistent/flatpak ~/.local/share/flatpak
+fi
+
+rm -rf --one-file-system ~/.var/app
+ln -s ~/Persistent/app ~/.var/app
+EOF
+chmod +x "$PERSISTENT_DIR/flatpak-setup.sh"
+
+# Autostart the symlink repair script using Dotfiles
+echo "Creating login autostart entry to run flatpak-setup.sh..."
+mkdir -p "$DOTFILES_DIR/.config/autostart"
+cat > "$DOTFILES_DIR/.config/autostart/FlatpakSetup.desktop" <<EOF
+[Desktop Entry]
+Name=Flatpak Setup
+Comment=Relinks flatpak folders on login
+Exec=/home/amnesia/Persistent/flatpak-setup.sh
+Terminal=false
+Type=Application
+EOF
+
   # Create Signal launcher script
   echo "Creating Signal launcher script..."
   cat > "$PERSISTENT_DIR/signal.sh" <<EOF
