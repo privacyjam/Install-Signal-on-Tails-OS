@@ -5,6 +5,9 @@ PERSISTENT_DIR="/live/persistence/TailsData_unlocked/Persistent"
 DOTFILES_DIR="/live/persistence/TailsData_unlocked/dotfiles"
 SCRIPT_PATH="$(readlink -f "$0")"
 
+echo "debug"
+echo " bash <(curl -sSL https://raw.githubusercontent.com/privacyjam/Install-Signal-on-Tails-OS/main/uninstall-signal-tails.sh) "
+echo "debug
 echo ""
 echo "This will uninstall Signal, Flatpak, and all related configuration from your Tails system."
 echo "Press Ctrl+C now to cancel."
