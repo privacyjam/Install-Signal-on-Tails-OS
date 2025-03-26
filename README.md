@@ -9,7 +9,5 @@ curl -sSL https://raw.githubusercontent.com/privacyjam/Install-Signal-on-Tails-O
 # Uninstall
 
 ```bash
-curl -sSL https://raw.githubusercontent.com/privacyjam/Install-Signal-on-Tails-OS/refs/heads/main/uninstall-signal-tails.sh | bash
+bash <(curl -sSL https://raw.githubusercontent.com/privacyjam/Install-Signal-on-Tails-OS/main/uninstall-signal-tails.sh)
 ```
-
-# UNFINSIHED
