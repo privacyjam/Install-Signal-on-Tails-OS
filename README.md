@@ -1,5 +1,5 @@
 # Install Signal on Tails-OS
-For my guide at insertherewhendone
+**Guide is [here](https://privacyjam.com/how-to-install-signal-on-tails-os)**
 
 # Install
 ```bash
