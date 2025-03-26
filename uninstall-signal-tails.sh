@@ -7,11 +7,9 @@ SCRIPT_PATH="$(readlink -f "$0")"
 
 echo ""
 echo "This will uninstall Signal, Flatpak, and all related configuration from your Tails system."
-read -p "Are you sure you want to continue? [y/N]: " CONFIRM
-if ! echo "$CONFIRM" | grep -iq "^y"; then
-  echo "Uninstall cancelled."
-  exit 0
-fi
+echo "Press Ctrl+C now to cancel."
+echo "Continuing in 6 seconds..."
+sleep 6
 
 echo ""
 echo "Uninstalling Signal Messenger and Flatpak from Tails"
