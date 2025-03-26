@@ -79,8 +79,8 @@ EOF
 
   echo ""
   echo "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"
-  echo "IMPORTANT: After reboot, Tails will prompt you to install flatpak again."
-  echo "           You MUST click 'Install Every Time' in the prompt manually."
+  echo "IMPORTANT: Right now, Tails will prompt you to add flatpak to additional software."
+  echo "           You MUST click 'Install Every Time' in the prompt or Signal will not work."
   echo "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"
   echo ""
   echo "Step 1 complete."
