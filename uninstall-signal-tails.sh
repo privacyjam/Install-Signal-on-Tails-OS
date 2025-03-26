@@ -42,6 +42,15 @@ else
   echo "Flatpak not installed via apt."
 fi
 
+# Important warning about Additional Software
+echo ""
+echo "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"
+echo "!!! IMPORTANT: Tails will likely show a notification asking if you want to"
+echo "!!! remove 'flatpak' from Additional Software. You MUST click 'Remove' or"
+echo "!!! Tails will reinstall flatpak again at next boot."
+echo "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"
+echo ""
+
 # Delete persistent flatpak data
 echo "Cleaning up persistent storage..."
 rm -rf "$PERSISTENT_DIR/flatpak"
@@ -63,13 +72,3 @@ rm -rf "$HOME/.var/app"
 echo ""
 echo "Uninstall complete."
 echo "Flatpak and Signal have been removed from your Tails system."
-
-# === Optional cleanup ===
-read -p "Do you want to delete this uninstall script now? [y/N]: " CLEANUP
-if echo "$CLEANUP" | grep -iq "^y"; then
-  echo "Removing uninstall script..."
-  rm -f "$SCRIPT_PATH"
-  echo "Cleanup complete."
-else
-  echo "You can leave this script in ~/Persistent in case you want to use it again."
-fi
