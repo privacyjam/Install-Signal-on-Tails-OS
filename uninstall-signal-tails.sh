@@ -6,8 +6,24 @@ DOTFILES_DIR="/live/persistence/TailsData_unlocked/dotfiles"
 SCRIPT_PATH="$(readlink -f "$0")"
 
 echo ""
+echo "This will uninstall Signal, Flatpak, and all related configuration from your Tails system."
+read -p "Are you sure you want to continue? [y/N]: " CONFIRM
+if ! echo "$CONFIRM" | grep -iq "^y"; then
+  echo "Uninstall cancelled."
+  exit 0
+fi
+
+echo ""
 echo "Uninstalling Signal Messenger and Flatpak from Tails"
 echo "----------------------------------------------------"
+
+# Stop Signal if running
+if pgrep -f org.signal.Signal >/dev/null 2>&1; then
+  echo "Signal is currently running. Stopping it..."
+  flatpak kill org.signal.Signal 2>/dev/null || pkill -f org.signal.Signal
+else
+  echo "Signal is not running."
+fi
 
 # Remove Signal flatpak app
 if flatpak list | grep -q org.signal.Signal; then
